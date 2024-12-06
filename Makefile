@@ -29,6 +29,7 @@ usage:
 	@echo "build....................Builds the django docker image"
 	@echo "chown....................Change ownership of files to own user"
 	@echo "clear_pyc................Remove all pyc files"
+	@echo "down.....................Stop the Django server"
 	@echo "help.....................Display available commands"
 	@echo "isort....................Sort Python imports"
 	@echo "isort_check..............Checks Python import are sorted correctly without making changes"
@@ -44,9 +45,6 @@ usage:
 	@echo "up.......................Start the Django server"
 	@echo "usage....................Display available commands"
 
-build:
-	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose build django
-
 black:
 	@docker-compose run --rm django black src ${ARGS}
 ifneq ($(OS),Darwin)
@@ -55,6 +53,9 @@ endif
 
 black_check:
 	$(MAKE) black ARGS="--check"
+
+build:
+	COMPOSE_DOCKER_CLI_BUILD=1 DOCKER_BUILDKIT=1 docker-compose build django
 
 chown:
 	@docker-compose run --rm django chown -R "`id -u`:`id -u`" "/usr/src/app/${ARGS}"
@@ -98,11 +99,11 @@ PG_DB_NAME=postgres
 PG_DB_USER=postgres
 PG_DB_PASSWORD=postgres
 
-db:
-	@docker-compose run --rm -e PGPASSWORD=$(PG_DB_PASSWORD) db psql -h $(PG_DB_HOST) -p $(PG_DB_PORT) -U $(PG_DB_USER) -d $(PG_DB_NAME) $(ARGS)
-
 prep:
-	@docker-compose run --no-deps --rm django /bin/sh -c "isort src && black src && mypy --cache-dir=/dev/null src && flake8 src"
+	@docker-compose run --no-deps --rm django /bin/sh -c "isort src && black src && flake8 src && mypy --cache-dir=/dev/null src"
+
+psql:
+	@docker-compose run --rm -e PGPASSWORD=$(PG_DB_PASSWORD) db psql -h $(PG_DB_HOST) -p $(PG_DB_PORT) -U $(PG_DB_USER) -d $(PG_DB_NAME) $(ARGS)
 
 shell:
 	$(MAKE) manage ARGS="shell ${ARGS}"

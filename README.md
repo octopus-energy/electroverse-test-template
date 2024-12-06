@@ -29,7 +29,7 @@ Additional arguments may be provided to some commands by providing the `ARGS=""`
 ### How do I run the project locally?
 * Run `make build` to build the container(s) needed. 
 * Run `make up` to start the Django application and any dependent services defined in the compose file. 
-* Run `make manage ARGS="migrate"` to prepare the database (this runs Django's `python manage.py ${ARGS}` command inside the container).
+* Run `make manage ARGS="migrate"` to prepare the database (this runs Django's `python manage.py ${ARGS}` command inside the container). This can be run in another shell window if you didn't run `make up` with the `ARGS="--detach"` flag.
 * You'll need a user to log into the admin console. To create an admin user for the project run `make manage ARGS="createsuperuser"`.
 * You should now be able to access the Django admin console from `http://localhost:8000/admin`, and a "Hello, world" page at `http://localhost:8000/task`
 
@@ -40,6 +40,6 @@ Additional arguments may be provided to some commands by providing the `ARGS=""`
  - `make prep` - run code formatting and linting tools: `black`, `isort`, `mypy`, `lint`. These can also be run individually with the corresponding make command.
 
 ### Examples
-- Instead of `make test ARGS="path/to/test.py"`
-- Instead of running `make test ARGS="-k test_specific_test_case"`
-- Instead of `make manage ARGS="createsuperuser`
+- Rebuild and re-run the application in detached mode: `make up ARGS="--build --detach"`
+- Running a specific test file: `make test ARGS="path/to/test.py"`
+- Running tests matching a keyword: `make test ARGS="-k test_specific_test_case"`
